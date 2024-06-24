@@ -1,5 +1,5 @@
 import FileViewer from 'react-file-viewer';
-import './Renderer.css';
+import '../styles/Renderer.css';
 
 type RendererProps = {
     height: number;
