@@ -1,6 +1,7 @@
 // index.js
 const azure = require('azure-storage');
 const blobService = azure.createBlobService(process.env.AZURE_URL);
+console.debug("Authenticated blob service");
 
 const express = require('express');
 const app = express();

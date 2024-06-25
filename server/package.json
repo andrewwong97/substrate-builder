@@ -8,6 +8,6 @@
     "express": "^4.19.2"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "AZURE_URL=$(./bin/extract_connection_string.sh) node index.js"
   }
 }
