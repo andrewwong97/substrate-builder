@@ -11,7 +11,6 @@ type CanvasProps = {
 
 const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [showBoundBox, setShowBoundBox] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [image] = useImage(path);
   const imageRef = useRef<Konva.Image>(null);
