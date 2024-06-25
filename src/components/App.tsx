@@ -12,7 +12,13 @@ function App() {
 
   return (
     <div className="App">
-      <PhotoEditorCanvas path={file ? URL.createObjectURL(file) : ''} />
+      <h1>Phone Case Builder</h1>
+      <PhotoEditorCanvas 
+        path={file ? URL.createObjectURL(file) : ''} 
+        height={600}
+        width={800}
+      />
+      <br />
       <MediaPicker onFileChange={handleFileChange} />
     </div>
   );
