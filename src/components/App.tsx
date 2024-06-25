@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/App.css';
-import Renderer from './Renderer';
 import MediaPicker from './MediaPicker';
+import PhotoEditorCanvas from './PhotoEditorCanvas';
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="App">
-      <Renderer height={500} width={500} file={file ?? undefined}/>
+      <PhotoEditorCanvas path={file ? URL.createObjectURL(file) : ''} />
       <MediaPicker onFileChange={handleFileChange} />
     </div>
   );
