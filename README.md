@@ -4,7 +4,8 @@
 <img width="1512" alt="image" src="https://github.com/andrewwong97/sandbox/assets/7339169/0173a0bd-cadc-4797-914e-f63515fa9465">
 
 ## V1
-<img width="870" alt="image" src="https://github.com/andrewwong97/sandbox/assets/7339169/a073ee1f-db9d-47fd-bb39-ff3a6fc83eb3">
+![2024-06-25 04 40 38](https://github.com/andrewwong97/sandbox/assets/7339169/ed504a22-5a37-4125-92d2-ebc75114be34)
+
 
 
 
