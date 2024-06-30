@@ -1,5 +1,7 @@
 import React, { ChangeEvent, useState, createContext } from 'react';
 
+import '../styles/MediaPicker.css';
+
 type MediaPickerProps = {
     onFileChange: (file: File) => void;
 };
@@ -17,10 +19,12 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ onFileChange }) => {
     };
 
     return (
-        <div>
-            <input type="file" onChange={handleFileChange} />
-            {file && <p>Selected file: {file.name}</p>}
+        <div className="MediaPicker">
+            <label htmlFor="fileUpload" className="customFileUpload">Choose File</label>
+            <input id="fileUpload" type="file" onChange={handleFileChange} />
         </div>
+
+
     );
 };
 

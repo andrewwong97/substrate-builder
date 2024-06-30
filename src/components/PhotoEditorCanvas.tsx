@@ -9,6 +9,12 @@ type CanvasProps = {
   width: number;
 }
 
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 600;
+
+const SUBSTRATE_WIDTH = 250;
+const SUBSTRATE_HEIGHT = 450;
+
 const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -17,14 +23,11 @@ const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
   const trRef = useRef<Konva.Transformer>(null);
   const groupRef = useRef<Konva.Group>(null);
 
-  const canvasWidth = 800;
-  const canvasHeight = 600;
+ 
+  const SUBSTRATE_X = (CANVAS_WIDTH - SUBSTRATE_WIDTH) / 2;
+  const SUBSTRATE_Y = (CANVAS_HEIGHT - SUBSTRATE_HEIGHT) / 2;
 
-  const phoneCaseWidth = 250;
-  const phoneCaseHeight = 450;
-  const rect2X = (canvasWidth - phoneCaseWidth) / 2;
-  const rect2Y = (canvasHeight - phoneCaseHeight) / 2;
-
+  // Render image on load
   useEffect(() => {
     if (isImageLoaded && imageRef.current && trRef.current && groupRef.current) {
       trRef.current.nodes([groupRef.current]);
@@ -35,18 +38,18 @@ const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
   useEffect(() => {
     if (image && groupRef.current) {
       const aspectRatio = image.width / image.height;
-      let newWidth = phoneCaseWidth;
-      let newHeight = phoneCaseWidth / aspectRatio;
+      let newWidth = SUBSTRATE_WIDTH;
+      let newHeight = SUBSTRATE_WIDTH / aspectRatio;
 
-      if (newHeight > phoneCaseHeight) {
-        newHeight = phoneCaseHeight;
-        newWidth = phoneCaseHeight * aspectRatio;
+      if (newHeight > SUBSTRATE_HEIGHT) {
+        newHeight = SUBSTRATE_HEIGHT;
+        newWidth = SUBSTRATE_HEIGHT * aspectRatio;
       }
 
       groupRef.current.width(newWidth);
       groupRef.current.height(newHeight);
-      groupRef.current.x(rect2X + (phoneCaseWidth - newWidth) / 2);
-      groupRef.current.y(rect2Y + (phoneCaseHeight - newHeight) / 2);
+      groupRef.current.x(SUBSTRATE_X + (SUBSTRATE_WIDTH - newWidth) / 2);
+      groupRef.current.y(SUBSTRATE_Y + (SUBSTRATE_HEIGHT - newHeight) / 2);
 
       if (imageRef.current) {
         imageRef.current.width(newWidth);
@@ -55,11 +58,11 @@ const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
         imageRef.current.y(0);
       }
     }
-  }, [image, phoneCaseWidth, phoneCaseHeight, rect2X, rect2Y]);
+  }, [image, SUBSTRATE_WIDTH, SUBSTRATE_HEIGHT, SUBSTRATE_X, SUBSTRATE_Y]);
 
   const boundBoxFunc = (oldBox: any, newBox: any) => {
-    const maxWidth = phoneCaseWidth;
-    const maxHeight = phoneCaseHeight;
+    const maxWidth = SUBSTRATE_WIDTH;
+    const maxHeight = SUBSTRATE_HEIGHT;
     
     if (newBox.width > maxWidth || newBox.height > maxHeight) {
       return oldBox;
@@ -69,10 +72,10 @@ const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
   };
 
   return (
-    <Stage width={canvasWidth} height={canvasHeight}>
+    <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
       <Layer>
-        <Rect x={0} y={0} width={canvasWidth} height={canvasHeight} fill="#212121" />
-        <Rect x={rect2X} y={rect2Y} width={phoneCaseWidth} height={phoneCaseHeight} fill="#f5f5f5" />
+        <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="#212121" />
+        <Rect x={SUBSTRATE_X} y={SUBSTRATE_Y} width={SUBSTRATE_WIDTH} height={SUBSTRATE_HEIGHT} fill="#f5f5f5" />
         {image && (
           <>
             <Group
@@ -87,6 +90,7 @@ const PhotoEditorCanvas = ({ path, height, width }: CanvasProps) => {
                 onLoad={() => setIsImageLoaded(true)}
                 
               />
+              {/* Bounding box on drag */}
               {isDragging && <Rect
                 width={groupRef.current?.width() || 0}
                 height={groupRef.current?.height() || 0}

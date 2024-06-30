@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import '../styles/App.css';
 import MediaPicker from './MediaPicker';
 import PhotoEditorCanvas from './PhotoEditorCanvas';
+import ExportButton from './ExportButton';
+
+import '../styles/App.css';
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -19,7 +21,10 @@ function App() {
         width={800}
       />
       <br />
-      <MediaPicker onFileChange={handleFileChange} />
+      <div className="MediaActions">
+        <MediaPicker onFileChange={handleFileChange} />
+        <ExportButton onClick={() => console.log('Exporting')} />
+      </div>
     </div>
   );
 }

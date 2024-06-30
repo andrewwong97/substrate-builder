@@ -1,0 +1,22 @@
+
+.customFileUpload {
+    border: 1px solid #ccc;
+    font-size: 14px; 
+    border-radius: 3px;
+    padding: 6px 12px;
+    display: inline-block;
+    cursor: pointer;
+    background: #f8f8f8;
+    text-align: center;
+    margin: 5px;
+    color: #e1dfdd;
+}
+  
+#fileUpload {
+    display: none;
+}
+  
+.fileName {
+    margin-top: 10px;
+    word-break: break-all;
+}
