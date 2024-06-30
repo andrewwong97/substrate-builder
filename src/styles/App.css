@@ -45,5 +45,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  flex-direction: column;
+}
+
+.HeightAndWidth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.HeightAndWidth > * {
+  margin: 0 5px;
+  color: #e1dfdd;
 }
