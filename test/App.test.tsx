@@ -2,10 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from '../src/components/App';
 
-test('renders learn react link', () => {
+test('renders title', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-  const helloElement = screen.getByText(/hello, world/i);
-  expect(helloElement).toBeInTheDocument();
+  expect(screen.getByText("Phone Case Builder")).toBeInTheDocument();
 });
