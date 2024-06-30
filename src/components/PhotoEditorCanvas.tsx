@@ -2,23 +2,23 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Stage, Layer, Image, Rect, Transformer, Group } from 'react-konva';
 import Konva from 'konva';
 import useImage from 'use-image';
+import { useSubstrate } from './SubstrateProvider';
 
 type CanvasProps = {
   path: string;
-  substrateHeight: number;
-  substrateWidth: number;
 }
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 
-const PhotoEditorCanvas = ({ path, substrateHeight = 450, substrateWidth = 250 }: CanvasProps) => {
+const PhotoEditorCanvas = ({ path }: CanvasProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [image] = useImage(path);
   const imageRef = useRef<Konva.Image>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const imageGroupRef = useRef<Konva.Group>(null);
+  const { substrateHeight, substrateWidth } = useSubstrate();
 
   const SUBSTRATE_X = (CANVAS_WIDTH - substrateWidth) / 2;
   const SUBSTRATE_Y = (CANVAS_HEIGHT - substrateHeight) / 2;

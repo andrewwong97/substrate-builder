@@ -40,22 +40,3 @@
     transform: rotate(360deg);
   }
 }
-
-.MediaActions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.HeightAndWidth {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 5px;
-}
-
-.HeightAndWidth > * {
-  margin: 0 5px;
-  color: #e1dfdd;
-}
