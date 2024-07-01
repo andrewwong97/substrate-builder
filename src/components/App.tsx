@@ -1,4 +1,4 @@
-import PhotoEditorCanvas from './PhotoEditorCanvas';
+import Canvas from './Canvas';
 
 import '../styles/App.css';
 import MediaActions from './MediaActions';
@@ -9,8 +9,8 @@ function App() {
   return (
     <SubstrateProvider>
       <div className="App">
-        <h1>Phone Case Builder</h1>
-        <PhotoEditorCanvas />
+        <h1>Substrate Builder</h1>
+        <Canvas />
         <MediaActions />
       </div>
     </SubstrateProvider>

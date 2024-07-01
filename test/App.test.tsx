@@ -5,6 +5,6 @@ import App from '../src/components/App';
 describe('App', () => {
   test('renders title', () => {
     render(<App />);
-    expect(screen.getByText("Phone Case Builder")).toBeInTheDocument();
+    expect(screen.getByText("Substrate Builder")).toBeInTheDocument();
   });
 });

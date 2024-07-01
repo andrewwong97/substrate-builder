@@ -6,7 +6,7 @@ import { useSubstrate } from './SubstrateProvider';
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 
-const PhotoEditorCanvas = () => {
+const Canvas = () => {
   const { substrateHeight, substrateWidth, file } = useSubstrate();
   const [image, setImage] = useState<HTMLImageElement>();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -76,7 +76,7 @@ const PhotoEditorCanvas = () => {
 
   const handleDeselect = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
     // Deselect when clicking outside the image
-    const clickedOnEmpty = e.target === e.target.getStage();
+    const clickedOnEmpty = e.target !== imageGroupRef.current && e.target !== imageRef.current;
     if (clickedOnEmpty) {
       setIsSelected(false);
     }
@@ -85,8 +85,8 @@ const PhotoEditorCanvas = () => {
   return (
     <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
       <Layer>
-        <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="#212121" />
-        <Rect x={substrateX} y={substrateY} width={substrateWidth} height={substrateHeight} fill="#f5f5f5" />
+        <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="#212121" onClick={handleDeselect} />
+        <Rect x={substrateX} y={substrateY} width={substrateWidth} height={substrateHeight} fill="#f5f5f5" onClick={handleDeselect} />
         {image && isImageLoaded && (
           <>
             <Group
@@ -127,4 +127,4 @@ const PhotoEditorCanvas = () => {
   );
 };
 
-export default PhotoEditorCanvas;
+export default Canvas;
