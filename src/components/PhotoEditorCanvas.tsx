@@ -95,6 +95,7 @@ const PhotoEditorCanvas = () => {
               onClick={handleSelect}
               onTap={handleSelect}
               onDragStart={handleSelect}
+              onDragEnd={handleDeselect}
             >
               <KonvaImage
                 ref={imageRef}
