@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import { Stage, Layer, Image as KonvaImage, Rect, Transformer, Group } from 'react-konva';
 import Konva from 'konva';
 import { useSubstrate } from './SubstrateProvider';
+import { set } from 'lodash';
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
@@ -95,7 +96,7 @@ const Canvas = () => {
               onClick={handleSelect}
               onTap={handleSelect}
               onDragStart={handleSelect}
-              onDragEnd={handleDeselect}
+              onDragEnd={() => setIsSelected(false)}
             >
               <KonvaImage
                 ref={imageRef}
