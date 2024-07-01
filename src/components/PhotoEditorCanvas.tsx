@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Stage, Layer, Image as KonvaImage, Rect, Transformer, Group } from 'react-konva';
 import Konva from 'konva';
 import { useSubstrate } from './SubstrateProvider';
@@ -18,7 +18,7 @@ const PhotoEditorCanvas = () => {
   const imageGroupRef = useRef<Konva.Group>(null);
 
   const [substrateX, setSubstrateX] = useState((CANVAS_WIDTH-DEFAULT_SUBSTRATE_WIDTH)/2);
-  const [substrateY, setSubstrateY] = useState((CANVAS_HEIGHT-DEFAULT_SUBSTRATE_WIDTH)/2);
+  const [substrateY, setSubstrateY] = useState((CANVAS_HEIGHT-DEFAULT_SUBSTRATE_HEIGHT)/2);
   
   // Load image into state when file changes
   useEffect(() => {
