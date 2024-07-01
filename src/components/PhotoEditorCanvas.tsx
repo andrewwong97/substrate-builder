@@ -5,17 +5,15 @@ import { useSubstrate } from './SubstrateProvider';
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
-const DEFAULT_SUBSTRATE_HEIGHT = 450;
-const DEFAULT_SUBSTRATE_WIDTH = 200;
 
 const PhotoEditorCanvas = () => {
   const { substrateHeight, substrateWidth, file } = useSubstrate();
   const [image, setImage] = useState<HTMLImageElement>();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const [showTransformControls, setShowTransformControls] = useState(false);
   const imageRef = useRef<Konva.Image>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const imageGroupRef = useRef<Konva.Group>(null);
+  const [isSelected, setIsSelected] = useState(false);
   
   // Load image into state when file changes
   useEffect(() => {
@@ -27,6 +25,7 @@ const PhotoEditorCanvas = () => {
       };
       setIsImageLoaded(true);
     } else {
+      setImage(undefined);
       setIsImageLoaded(false);
     }
   }, [file]);
@@ -46,23 +45,20 @@ const PhotoEditorCanvas = () => {
       const defaultImageWidth = Math.min(substrateWidth, substrateHeight * aspectRatio);
       const defaultImageHeight = defaultImageWidth / aspectRatio;
 
-      
-    
-      const setImageProperties = (node: Konva.Node) => {
-        const substrateX = Math.round((CANVAS_WIDTH - substrateWidth) / 2);
-        const substrateY = Math.round((CANVAS_HEIGHT - substrateHeight) / 2);
-        const centerX = substrateX + (substrateWidth - defaultImageWidth) / 2;
-        const centerY = substrateY + (substrateHeight - defaultImageHeight) / 2;
-        node.width(defaultImageWidth);
-        node.height(defaultImageHeight);
-        node.x(centerX);
-        node.y(centerY);
-      };
-    
-      setImageProperties(imageGroupRef.current);
-    
+      const substrateX = Math.round((CANVAS_WIDTH - substrateWidth) / 2);
+      const substrateY = Math.round((CANVAS_HEIGHT - substrateHeight) / 2);
+
+      imageGroupRef.current.width(defaultImageWidth);
+      imageGroupRef.current.height(defaultImageHeight);
+      imageGroupRef.current.x(substrateX + (substrateWidth - defaultImageWidth) / 2);
+      imageGroupRef.current.y(substrateY + (substrateHeight - defaultImageHeight) / 2);
+
       if (imageRef.current) {
-        setImageProperties(imageRef.current);
+        imageRef.current.width(defaultImageWidth);
+        imageRef.current.height(defaultImageHeight);
+        // X and Y are relative to the parent, which would be the group here
+        imageRef.current.x(0);
+        imageRef.current.y(0);
       }
     }
   }, [image, substrateHeight, substrateWidth]);
@@ -74,31 +70,41 @@ const PhotoEditorCanvas = () => {
     };
   }, [substrateWidth, substrateHeight]);
 
+  const handleSelect = () => {
+    setIsSelected(true);
+  };
+
+  const handleDeselect = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+    // Deselect when clicking outside the image
+    const clickedOnEmpty = e.target === e.target.getStage();
+    if (clickedOnEmpty) {
+      setIsSelected(false);
+    }
+  };
 
   return (
     <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
       <Layer>
         <Rect x={0} y={0} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} fill="#212121" />
         <Rect x={substrateX} y={substrateY} width={substrateWidth} height={substrateHeight} fill="#f5f5f5" />
-        {image && (
+        {image && isImageLoaded && (
           <>
             <Group
               ref={imageGroupRef}
               draggable={true}
-              onTap={() => setShowTransformControls(true)}
-              onDragStart={() => setShowTransformControls(true)}
-              onDragEnd={() => setShowTransformControls(false)}
+              onClick={handleSelect}
+              onTap={handleSelect}
+              onDragStart={handleSelect}
             >
               <KonvaImage
                 ref={imageRef}
                 image={image}
-                onSelect={() => setShowTransformControls(true)}
                 onLoad={() => setIsImageLoaded(true)}
               />
             </Group>
-            {isImageLoaded && showTransformControls && (
-              <Transformer
+            {isSelected && <Transformer
                 ref={trRef}
+                nodes={[imageGroupRef.current]}
                 boundBoxFunc={(oldBox: any, newBox: any) => {
                   if (newBox.width > CANVAS_WIDTH || newBox.height > CANVAS_HEIGHT) {
                     return oldBox;
@@ -108,10 +114,11 @@ const PhotoEditorCanvas = () => {
                 keepRatio={true}
                 enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
                 resizeEnabled={true}
-                rotateEnabled={false}
+                rotateEnabled={true}
                 rotateLineVisible={true}
-              />
-            )}
+                rotationSnaps={[0, 45, 90, 180]}
+              /> 
+            }
           </>
         )}
       </Layer>
