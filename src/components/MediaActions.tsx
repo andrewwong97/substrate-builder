@@ -6,39 +6,38 @@ import ExportButton from './ExportButton';
 import { useSubstrate } from './SubstrateProvider';
 import '../styles/MediaActions.css';
 
-interface MediaActionsProps {
-    handleFileChange: (uploaded: File) => void;
-};
 
-const MediaActions: React.FC<MediaActionsProps> = ({ handleFileChange }) => {
-    const { substrateHeight, setSubstrateHeight, substrateWidth, setSubstrateWidth } = useSubstrate();
-    const [debouncedHeight, setDebouncedHeight] = useState(substrateHeight);
-    const [debouncedWidth, setDebouncedWidth] = useState(substrateWidth);
+interface MediaActionsProps {}
 
-    const debouncedSetHeight = debounce((value: number) => setDebouncedHeight(value), 200);
-    const debouncedSetWidth = debounce((value: number) => setDebouncedWidth(value), 200);
+const MediaActions: React.FC<MediaActionsProps> = () => {
+    const [localSubstrateHeight, setLocalSubstrateHeight] = useState(450);
+    const [localSubstrateWidth, setLocalSubstrateWidth] = useState(200);
+    const { setSubstrateHeight, setSubstrateWidth } = useSubstrate();
+
+    const debounceHeight = debounce((value: number) => setSubstrateHeight(value), 200);
+    const debounceWidth = debounce((value: number) => setSubstrateWidth(value), 200);
 
     const handleSubstrateHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(event.target.value);
-        setSubstrateHeight(value);
-        debouncedSetHeight(value);
+        setLocalSubstrateHeight(value);
+        debounceHeight(value);
     };
 
     const handleSubstrateWidthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(event.target.value);
-        setSubstrateWidth(value);
-        debouncedSetWidth(value);
-    }
+        setLocalSubstrateWidth(value);
+        debounceWidth(value);
+    };
 
     return (
         <div className="MediaActions">
-            <MediaPicker onFileChange={handleFileChange} />
+            <MediaPicker />
             <ExportButton onClick={() => console.log('Exporting')} />
             <div className="HeightAndWidth">
                 <label>Substrate Height</label>
-                <input type="text" value={substrateHeight} onChange={handleSubstrateHeightChange} placeholder='Height' />
+                <input type="text" value={localSubstrateHeight} onChange={handleSubstrateHeightChange} placeholder='Height' />
                 <label>Substrate Width</label>
-                <input type="text" value={substrateWidth} onChange={handleSubstrateWidthChange} placeholder='Width' />
+                <input type="text" value={localSubstrateWidth} onChange={handleSubstrateWidthChange} placeholder='Width' />
             </div>
       </div>
     );

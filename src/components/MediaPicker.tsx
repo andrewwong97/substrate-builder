@@ -1,13 +1,12 @@
-import React, { ChangeEvent, useState, createContext } from 'react';
+import React, { ChangeEvent } from 'react';
+import { useSubstrate } from './SubstrateProvider';
 
 import '../styles/MediaPicker.css';
 
-type MediaPickerProps = {
-    onFileChange: (file: File) => void;
-};
-
-const MediaPicker: React.FC<MediaPickerProps> = ({ onFileChange }) => {
-    const [file, setFile] = useState<File | null>();
+interface MediaPickerProps {
+}
+const MediaPicker: React.FC<MediaPickerProps> = () => {
+    const { file, setFile } = useSubstrate();
 
     const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
         const uploaded = event.target.files?.[0];
@@ -15,16 +14,14 @@ const MediaPicker: React.FC<MediaPickerProps> = ({ onFileChange }) => {
             return;
         }
         setFile(uploaded);
-        onFileChange(uploaded);
     };
 
     return (
         <div className="MediaPicker">
             <label htmlFor="fileUpload" className="customFileUpload">Choose File</label>
             <input id="fileUpload" type="file" onChange={handleFileChange} />
+            {file && <p className="fileName">{file.name}</p>}
         </div>
-
-
     );
 };
 

@@ -1,10 +1,12 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState} from 'react';
 
 interface SubstrateContextProps {
     substrateHeight: number;
     setSubstrateHeight: (value: number) => void;
     substrateWidth: number;
     setSubstrateWidth: (value: number) => void;
+    file: File | null;
+    setFile: (file: File) => void;
 }
 
 const SubstrateContext = createContext<SubstrateContextProps | undefined>(undefined);
@@ -14,11 +16,20 @@ interface SubstrateProviderProps {
 }
 
 const SubstrateProvider: React.FC<SubstrateProviderProps> = ({ children }) => {
-    const [substrateHeight, setSubstrateHeight] = React.useState(450);
-    const [substrateWidth, setSubstrateWidth] = React.useState(200);
+    const [substrateHeight, setSubstrateHeight] = useState<number>(450);
+    const [substrateWidth, setSubstrateWidth] = useState<number>(200);
+    const [file, setFile] = useState<File | null>(null);
 
     return (
-        <SubstrateContext.Provider value={{ substrateHeight, setSubstrateHeight, substrateWidth, setSubstrateWidth }}>
+        <SubstrateContext.Provider 
+            value={{ 
+                substrateHeight, 
+                setSubstrateHeight, 
+                substrateWidth, 
+                setSubstrateWidth,
+                file,
+                setFile
+        }}>
             {children}
         </SubstrateContext.Provider>
     );

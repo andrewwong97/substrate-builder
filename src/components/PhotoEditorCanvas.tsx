@@ -1,28 +1,33 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Stage, Layer, Image, Rect, Transformer, Group } from 'react-konva';
+import { useRef, useEffect, useState } from 'react';
+import { Stage, Layer, Image as KonvaImage, Rect, Transformer, Group } from 'react-konva';
 import Konva from 'konva';
-import useImage from 'use-image';
 import { useSubstrate } from './SubstrateProvider';
-
-type CanvasProps = {
-  path: string;
-}
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
 
-const PhotoEditorCanvas = ({ path }: CanvasProps) => {
+const PhotoEditorCanvas = () => {
+  const { substrateHeight, substrateWidth, file } = useSubstrate();
+  const [image, setImage] = useState<HTMLImageElement>();
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [image] = useImage(path);
   const imageRef = useRef<Konva.Image>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const imageGroupRef = useRef<Konva.Group>(null);
-  const { substrateHeight, substrateWidth } = useSubstrate();
 
   const SUBSTRATE_X = (CANVAS_WIDTH - substrateWidth) / 2;
   const SUBSTRATE_Y = (CANVAS_HEIGHT - substrateHeight) / 2;
-
+  
+  useEffect(() => {
+    if (!!file) {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      setImage(img);
+      setIsImageLoaded(true);
+    } else {
+      setIsImageLoaded(false);
+    }
+  }, [file]);
 
   // Render image on load
   useEffect(() => {
@@ -56,7 +61,7 @@ const PhotoEditorCanvas = ({ path }: CanvasProps) => {
         imageRef.current.y(0);
       }
     }
-  }, [image, substrateHeight, substrateWidth]);
+  }, [image, substrateHeight, substrateWidth, SUBSTRATE_X, SUBSTRATE_Y]);
 
   const boundBoxFunc = (oldBox: any, newBox: any) => {
     const maxWidth = substrateWidth;
@@ -82,7 +87,7 @@ const PhotoEditorCanvas = ({ path }: CanvasProps) => {
               onDragStart={() => setIsDragging(true)}
               onDragEnd={() => setIsDragging(false)}
             >
-              <Image
+              <KonvaImage
                 ref={imageRef}
                 image={image}
                 onLoad={() => setIsImageLoaded(true)}
