@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { Stage, Layer, Image as KonvaImage, Rect, Transformer, Group } from 'react-konva';
 import Konva from 'konva';
 import { useSubstrate } from './SubstrateProvider';
@@ -16,16 +16,15 @@ const PhotoEditorCanvas = () => {
   const imageRef = useRef<Konva.Image>(null);
   const trRef = useRef<Konva.Transformer>(null);
   const imageGroupRef = useRef<Konva.Group>(null);
-
-  const [substrateX, setSubstrateX] = useState((CANVAS_WIDTH-DEFAULT_SUBSTRATE_WIDTH)/2);
-  const [substrateY, setSubstrateY] = useState((CANVAS_HEIGHT-DEFAULT_SUBSTRATE_HEIGHT)/2);
   
   // Load image into state when file changes
   useEffect(() => {
     if (!!file) {
       const img = new Image();
       img.src = URL.createObjectURL(file);
-      setImage(img);
+      img.onload = () => {
+        setImage(img);
+      };
       setIsImageLoaded(true);
     } else {
       setIsImageLoaded(false);
@@ -40,36 +39,41 @@ const PhotoEditorCanvas = () => {
     }
   }, [isImageLoaded]);
 
-  // Set image size and position on change
+  // Set default image size and position on substrate canvas input change or image change
   useEffect(() => {
     if (image && imageGroupRef.current) {
       const aspectRatio = image.width / image.height;
-      let newWidth = substrateWidth;
-      let newHeight = substrateWidth / aspectRatio;
+      const defaultImageWidth = Math.min(substrateWidth, substrateHeight * aspectRatio);
+      const defaultImageHeight = defaultImageWidth / aspectRatio;
 
-      if (newHeight > substrateHeight) {
-        newHeight = substrateHeight;
-        newWidth = substrateHeight * aspectRatio;
-      }
-
-      const substrate_x = (CANVAS_WIDTH - substrateWidth) / 2;
-      const substrate_y = (CANVAS_HEIGHT - substrateHeight) / 2;
-      setSubstrateX(substrate_x);
-      setSubstrateY(substrate_y);
       
-      imageGroupRef.current.width(newWidth);
-      imageGroupRef.current.height(newHeight);
-      imageGroupRef.current.x(substrate_x + (substrateWidth - newWidth) / 2);
-      imageGroupRef.current.y(substrate_y + (substrateHeight - newHeight) / 2);
-
+    
+      const setImageProperties = (node: Konva.Node) => {
+        const substrateX = Math.round((CANVAS_WIDTH - substrateWidth) / 2);
+        const substrateY = Math.round((CANVAS_HEIGHT - substrateHeight) / 2);
+        const centerX = substrateX + (substrateWidth - defaultImageWidth) / 2;
+        const centerY = substrateY + (substrateHeight - defaultImageHeight) / 2;
+        node.width(defaultImageWidth);
+        node.height(defaultImageHeight);
+        node.x(centerX);
+        node.y(centerY);
+      };
+    
+      setImageProperties(imageGroupRef.current);
+    
       if (imageRef.current) {
-        imageRef.current.width(newWidth);
-        imageRef.current.height(newHeight);
-        imageRef.current.x(0);
-        imageRef.current.y(0);
+        setImageProperties(imageRef.current);
       }
     }
   }, [image, substrateHeight, substrateWidth]);
+
+  const { substrateX, substrateY } = useMemo(() => {
+    return {
+      substrateX: Math.round((CANVAS_WIDTH - substrateWidth) / 2),
+      substrateY: Math.round((CANVAS_HEIGHT - substrateHeight) / 2)
+    };
+  }, [substrateWidth, substrateHeight]);
+
 
   return (
     <Stage width={CANVAS_WIDTH} height={CANVAS_HEIGHT}>
@@ -81,16 +85,18 @@ const PhotoEditorCanvas = () => {
             <Group
               ref={imageGroupRef}
               draggable={true}
+              onTap={() => setShowTransformControls(true)}
               onDragStart={() => setShowTransformControls(true)}
               onDragEnd={() => setShowTransformControls(false)}
             >
               <KonvaImage
                 ref={imageRef}
                 image={image}
+                onSelect={() => setShowTransformControls(true)}
                 onLoad={() => setIsImageLoaded(true)}
               />
             </Group>
-            {isImageLoaded && (
+            {isImageLoaded && showTransformControls && (
               <Transformer
                 ref={trRef}
                 boundBoxFunc={(oldBox: any, newBox: any) => {
