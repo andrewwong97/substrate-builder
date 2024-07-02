@@ -2,7 +2,7 @@
 
 I am building a tool to help solve a domain-specfic workflow problem for direct printing on substrates (phone cases, t-shirts, cups, and mugs).
 
-This is really just a stripped down Photoshop, with quality-of-life (QoL) features to directly assist with this workflow. It is intended to specifically excel when embedded into e-commerce CMS to allow for user-orchestrated customization of product designs. For all self orchestrated workflows (i.e. bulk printing via Photoshop), this might not be the tool for you.
+This is really just a stripped down Photoshop, with quality-of-life (QoL) features to directly assist with this workflow. It is intended to specifically excel when embedded into e-commerce CMS to allow for user-orchestrated customization of product designs. For all self orchestrated workflows (i.e. bulk printing via Photoshop), this might not be the most effective tool.
 
 # Changelog, in pictures
 
