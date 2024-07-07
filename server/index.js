@@ -1,11 +1,9 @@
 // index.js
 const azure = require('azure-storage');
 const blobService = azure.createBlobService(process.env.AZURE_URL);
-console.debug("Authenticated blob service");
-
 const express = require('express');
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -36,7 +34,28 @@ app.get('/healthcheck', (req, res) => {
   res.send('Done ' + containers.join(', '));
 });
 
-app.listen(port, () => {
+app.post('/upload', (req, res) => {
+  if (req.file) {
+    console.log('Received file:', req.file.name);
+  }
+  // Upload a file
+  blobService.createBlockBlobFromLocalFile('mycontainer', 'myblob', 'test.txt', (error, result, response) => {
+    if (error) {
+      console.error('Error uploading file:', error);
+    } else {
+      console.log('Uploaded file:', result);
+    }
+  });
+  res.status(200).send('Uploaded');
+});
+
+const server = () => app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+if (require.main === module) {
+  server();
+};
+
+module.exports = { app, server };
 
