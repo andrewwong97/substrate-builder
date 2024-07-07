@@ -1,9 +1,14 @@
 // index.js
 const azure = require('azure-storage');
+const multer = require('multer');
 const blobService = azure.createBlobService(process.env.AZURE_URL);
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3001;
+
+// In-memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -34,19 +39,20 @@ app.get('/healthcheck', (req, res) => {
   res.send('Done ' + containers.join(', '));
 });
 
-app.post('/upload', (req, res) => {
-  if (req.file) {
-    console.log('Received file:', req.file.name);
+app.post('/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
   }
-  // Upload a file
-  blobService.createBlockBlobFromLocalFile('mycontainer', 'myblob', 'test.txt', (error, result, response) => {
-    if (error) {
-      console.error('Error uploading file:', error);
-    } else {
-      console.log('Uploaded file:', result);
-    }
+
+  const file = req.file;
+  const fileName = `${Date.now()}-${file.originalname}`;
+
+  res.status(200).json({
+    message: 'File uploaded successfully',
+    filename: fileName,
+    mimetype: file.mimetype,
+    size: file.size
   });
-  res.status(200).send('Uploaded');
 });
 
 const server = () => app.listen(port, () => {
