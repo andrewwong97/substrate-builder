@@ -5,9 +5,13 @@
   "license": "MIT",
   "dependencies": {
     "azure-storage": "^2.10.7",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "jest": "^29.7.0",
+    "multer": "^1.4.5-lts.1",
+    "supertest": "^7.0.0"
   },
   "scripts": {
-    "start": "AZURE_URL=$(./bin/extract_connection_string.sh) node index.js"
+    "start": "AZURE_URL=$(./bin/extract_connection_string.sh) node index.js",
+    "test": "AZURE_URL=$(./bin/extract_connection_string.sh) jest --testMatch '**/*.test.js'"
   }
 }
