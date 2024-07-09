@@ -1,7 +1,13 @@
 const request = require('supertest');
-const path = require('path');
-const fs = require('fs');
 const { app, server } = require('./index');
+
+const TEST_FILE_CONTENT = 'test image content';
+const TEST_FILE_NAME = 'test-image.jpg';
+const uploadFile = async () => {
+  return await request(app)
+    .post('/upload')
+    .attach('file', Buffer.from(TEST_FILE_CONTENT), TEST_FILE_NAME);
+};
 
 let testServer;
 beforeAll(() => {
@@ -19,19 +25,31 @@ describe('GET /', () => {
     });
 });
 
+describe('GET /healthcheck', () => {
+    test('It should respond with 200 status code', async () => {
+        const response = await request(app).get('/healthcheck');
+        expect(response.statusCode).toBe(200);
+    });
+});
+
+describe('GET /download/:filename', () => {
+    test('It should download a file successfully', async () => {
+        const uploadedResponse = await uploadFile();
+        const testFileName = uploadedResponse.body.filename;
+        const response = await request(app).get('/download/' + testFileName);
+        expect(response.statusCode).toBe(200);
+        expect(response.text).toBe('File downloaded - ' + testFileName);
+    });
+});
+
 describe('POST /upload', () => {
   test('POST /upload should upload an image successfully', async () => {
-    const testFileContent = 'test image content';
-    const testFileName = 'test-image.jpg';
-
-    const response = await request(app)
-      .post('/upload')
-      .attach('file', Buffer.from(testFileContent), testFileName);
+    const response = await uploadFile();
 
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('File uploaded successfully');
-    expect(response.body.filename).toBeDefined();
-    expect(response.body.size).toBe(testFileContent.length);
+    expect(response.body.filename).toBe(TEST_FILE_NAME);
+    expect(response.body.size).toBe(TEST_FILE_CONTENT.length);
     expect(response.body.mimetype).toBe('image/jpeg');
   });
 
