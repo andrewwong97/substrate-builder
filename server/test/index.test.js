@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app, server } = require('./index');
+const { app, server } = require('../dist/index');
 
 const TEST_FILE_CONTENT = 'test image content';
 const TEST_FILE_NAME = 'test-image.jpg';

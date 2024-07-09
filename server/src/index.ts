@@ -1,21 +1,35 @@
-// index.js
-const azure = require('azure-storage');
-const multer = require('multer');
-const blobService = azure.createBlobService(process.env.AZURE_URL);
-const express = require('express');
+import { Request, Response } from 'express';
+import multer from 'multer';
+import azure, {BlobService} from 'azure-storage';
+import express from 'express';
+
+const azureUrl: string | undefined = process.env.AZURE_URL as string;
+
+if (!azureUrl) {
+  throw new Error("AZURE_URL is not defined. Please set the environment variable.");
+}
+let blobService: BlobService;
 const app = express();
 const port = process.env.PORT || 3001;
+
+const server = () => app.listen(port, () => {
+  if (azureUrl) {
+    blobService = azure.createBlobService(azureUrl);
+    console.log('Booting up server with Azure Blob Storage');
+  }
+  console.log(`Server is running on http://localhost:${port}`);
+});
 
 // In-memory storage
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const tempFiles = new Map();
 
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello World!');
 });
 
-app.get('/healthcheck', (req, res) => {
+app.get('/healthcheck', (req: Request, res: Response) => {
   // Create a container
   blobService.createContainerIfNotExists('mycontainer', { publicAccessLevel: 'blob' }, (error, result, response) => {
     if (error) {
@@ -23,8 +37,9 @@ app.get('/healthcheck', (req, res) => {
     }
   });
   // List containers
-  let containers = []
-  blobService.listContainersSegmented(null, (error, result, response) => {
+  let containers: Array<any> = []
+  const token: any = null;
+  blobService.listContainersSegmented(token, (error, result, response) => {
     if (error) {
       res.status(400).send('Error listing containers');
     } else {
@@ -34,8 +49,9 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).send('Done ' + containers);
 });
 
-app.get('/download/:filename', (req, res) => {
-  const fileName = req.params.filename;
+
+app.get('/download/:filename', (req: Request, res: Response) => {
+  const fileName: string = req.params.filename;
   const requestedFileName = tempFiles.get(fileName);
   
   res.status(200).send('File downloaded - ' + requestedFileName);
@@ -57,17 +73,13 @@ app.post('/upload', upload.single('file'), (req, res) => {
   });
 });
 
-const saveFile = (filename) => {
+const saveFile = (filename: string) => {
   tempFiles.set(filename, filename);
 };
-
-const server = () => app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
 
 if (require.main === module) {
   server();
 };
 
-module.exports = { app, server };
+export { app, server };
 
