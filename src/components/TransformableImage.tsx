@@ -1,6 +1,6 @@
-import { Image as KonvaImage, Transformer, Group } from 'react-konva';
+import { Image as KonvaImage, Transformer, Group, Line } from 'react-konva';
 import Konva from 'konva';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useSubstrate } from './SubstrateProvider';
 
 interface TransformableImageProps {
@@ -19,8 +19,8 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
     const imageGroupRef = useRef<Konva.Group>(null);
     const [ imageHeight, setImageHeight ] = useState<number>(0);
     const [ imageWidth, setImageWidth ] = useState<number>(0);
-    const [ isXCentered, setIsXCentered ] = useState<boolean>(false);
-    const [ isYCentered, setIsYCentered ] = useState<boolean>(false);
+    const [ imagePosition, setImagePosition ] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+    const snapThreshold = 8;
 
     const handleSelect = useCallback(() => {
         setIsSelected(true);
@@ -54,7 +54,7 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
         }
     }, [isImageLoaded]);
 
-    // Set default image size and position on substrate canvas input change or image change
+    // Set initial image size and position
     useEffect(() => {
         handleDeselect();
         if (image && imageGroupRef.current) {
@@ -85,11 +85,23 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
     const handleDragMove = useCallback((e: Konva.KonvaEventObject<Event>) => {
         const node = e.target as Konva.Node;
         const newPos = node.position();
-        const centerX = newPos.x + imageWidth / 2;
-        const centerY = newPos.y + imageHeight / 2;
-        setIsXCentered(centerX === canvasWidth/2);
-        setIsYCentered(centerY === canvasHeight/2);
-    }, [canvasHeight, canvasWidth, substrateHeight, substrateWidth]);
+
+        const imageCenterX = newPos.x + imageWidth / 2;
+        const canvasCenterX = canvasWidth / 2;
+
+        if (imageGroupRef.current && Math.abs(imageCenterX - canvasCenterX) < snapThreshold) {
+            imageGroupRef.current.x(canvasCenterX - imageWidth / 2);
+        }
+
+        setImagePosition(newPos);
+
+    }, [canvasHeight, canvasWidth, substrateHeight, substrateWidth, imageGroupRef]);
+
+    const { isXCentered } = useMemo(() => {
+        return { 
+            isXCentered: imagePosition.x === canvasHeight/2, 
+        };
+    }, [imagePosition.x, canvasHeight]);
 
     if (image && isImageLoaded) {
         return (
@@ -105,6 +117,15 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
                 >
                     <KonvaImage ref={imageRef} image={image} onLoad={() => setIsImageLoaded(true)} />
                 </Group>
+                {isXCentered && isSelected && (
+                    <Line
+                        points={[canvasWidth / 2, 0, canvasWidth / 2, canvasHeight]}
+                        stroke="#FFC300"
+                        strokeWidth={1}
+                        dash={[5, 5]}
+                        lineCap="round"
+                    />
+                )}
                 {isSelected && (
                     <Transformer
                         ref={trRef}
