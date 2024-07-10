@@ -17,6 +17,10 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
     const imageRef = useRef<Konva.Image>(null);
     const trRef = useRef<Konva.Transformer>(null);
     const imageGroupRef = useRef<Konva.Group>(null);
+    const [ imageHeight, setImageHeight ] = useState<number>(0);
+    const [ imageWidth, setImageWidth ] = useState<number>(0);
+    const [ isXCentered, setIsXCentered ] = useState<boolean>(false);
+    const [ isYCentered, setIsYCentered ] = useState<boolean>(false);
 
     const handleSelect = useCallback(() => {
         setIsSelected(true);
@@ -30,23 +34,23 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
     useEffect(() => {
         handleDeselect();
         if (!!file) {
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-            setImage(img);
-        };
-        setIsImageLoaded(true);
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                setImage(img);
+            };
+            setIsImageLoaded(true);
         } else {
-        setImage(undefined);
-        setIsImageLoaded(false);
+            setImage(undefined);
+            setIsImageLoaded(false);
         }
     }, [file, handleDeselect, setIsImageLoaded, setImage]);
 
-    // Render image into the canvas
+    // Render transformer
     useEffect(() => {
         if (isImageLoaded && imageRef.current && trRef.current && imageGroupRef.current) {
-        trRef.current.nodes([imageGroupRef.current]);
-        trRef.current.getLayer()?.batchDraw();
+            trRef.current.nodes([imageGroupRef.current]);
+            trRef.current.getLayer()?.batchDraw();
         }
     }, [isImageLoaded]);
 
@@ -54,37 +58,50 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
     useEffect(() => {
         handleDeselect();
         if (image && imageGroupRef.current) {
-        const aspectRatio = image.width / image.height;
-        const defaultImageWidth = Math.min(substrateWidth, substrateHeight * aspectRatio);
-        const defaultImageHeight = defaultImageWidth / aspectRatio;
+            const aspectRatio = image.width / image.height;
+            const defaultImageWidth = Math.min(substrateWidth, substrateHeight * aspectRatio);
+            const defaultImageHeight = defaultImageWidth / aspectRatio;
 
-        const substrateX = Math.round((canvasWidth - substrateWidth) / 2);
-        const substrateY = Math.round((canvasHeight - substrateHeight) / 2);
+            const substrateX = Math.round((canvasWidth - substrateWidth) / 2);
+            const substrateY = Math.round((canvasHeight - substrateHeight) / 2);
 
-        imageGroupRef.current.width(defaultImageWidth);
-        imageGroupRef.current.height(defaultImageHeight);
-        imageGroupRef.current.x(substrateX + (substrateWidth - defaultImageWidth) / 2);
-        imageGroupRef.current.y(substrateY + (substrateHeight - defaultImageHeight) / 2);
+            imageGroupRef.current.width(defaultImageWidth);
+            imageGroupRef.current.height(defaultImageHeight);
+            imageGroupRef.current.x(substrateX + (substrateWidth - defaultImageWidth) / 2);
+            imageGroupRef.current.y(substrateY + (substrateHeight - defaultImageHeight) / 2);
 
-        if (imageRef.current) {
-            imageRef.current.width(defaultImageWidth);
-            imageRef.current.height(defaultImageHeight);
-            // X and Y are relative to the parent, which would be the group here
-            imageRef.current.x(0);
-            imageRef.current.y(0);
-        }
+            if (imageRef.current) {
+                imageRef.current.width(defaultImageWidth);
+                imageRef.current.height(defaultImageHeight);
+                // X and Y are relative to the parent, which would be the group here
+                imageRef.current.x(0);
+                imageRef.current.y(0);
+            }
+            setImageHeight(defaultImageHeight);
+            setImageWidth(defaultImageWidth);
         }
     }, [image, substrateHeight, substrateWidth, canvasHeight, canvasWidth, handleDeselect]);
 
+    const handleDragMove = useCallback((e: Konva.KonvaEventObject<Event>) => {
+        const node = e.target as Konva.Node;
+        const newPos = node.position();
+        const centerX = newPos.x + imageWidth / 2;
+        const centerY = newPos.y + imageHeight / 2;
+        setIsXCentered(centerX === canvasWidth/2);
+        setIsYCentered(centerY === canvasHeight/2);
+    }, [canvasHeight, canvasWidth, substrateHeight, substrateWidth]);
+
     if (image && isImageLoaded) {
         return (
-            <div className="TransformableImage">
+            <Group className="TransformableImage">
                 <Group
                     ref={imageGroupRef}
                     draggable={true}
                     onClick={handleSelect}
                     onTap={handleSelect}
                     onDragStart={handleSelect}
+                    onDragEnd={handleDeselect}
+                    onDragMove={handleDragMove}
                 >
                     <KonvaImage ref={imageRef} image={image} onLoad={() => setIsImageLoaded(true)} />
                 </Group>
@@ -106,7 +123,7 @@ export const TransformableImage: React.FC<TransformableImageProps> = ({ canvasHe
                         rotationSnaps={[0, 45, 90, 180]}
                     />
                 )}
-            </div>
+            </Group>
         );
     }
     return null;
