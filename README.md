@@ -1,12 +1,14 @@
 # substrate-builder
 
-I am building a tool to help solve a domain-specific workflow problem for direct printing on substrates (phone cases, t-shirts, cups, and mugs).
+This is a proof-of-concept tool to help solve a domain-specific workflow problem for direct printing on substrates (phone cases, t-shirts, cups, and mugs).
 
 This is really just a stripped down Photoshop, with quality-of-life (QoL) features to directly assist with this workflow. It is intended to specifically excel when embedded into e-commerce CMS to allow for user-orchestrated customization of product designs. For all self orchestrated workflows (i.e. bulk printing via Photoshop), this might not be the most effective tool.
 
 At the moment, there is no backend set up (see issues tab). Frontend data is persisted via local storage, and most of the file state is manipulated in local state, not saved anywhere.
 
-Image manipulation is done via React Konva, which is great for single canvas manipulations, but not great when you need a canvas on a canvas. As a food for thought, it may be better to rewrite some of this functionality and reduce dependencies.
+Image manipulation is done via React Konva, which is great for single canvas manipulations, but not great when you need a canvas on a canvas. As a food for thought, it may be better to rewrite some of this functionality and reduce dependencies. But from a prototyping perspective, I wanted to see if it was possible to do all the image manipulation I need from just this library (seems like no).
+
+Also, only one image can be uploaded, but it would significantly increase usability if multiple images can be uploaded. Nice QoL features for the admin would be bleed guides, for example.
 
 # Changelog, in pictures
 
