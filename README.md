@@ -1,10 +1,15 @@
 # substrate-builder
 
-I am building a tool to help solve a domain-specfic workflow problem for direct printing on substrates (phone cases, t-shirts, cups, and mugs).
+I am building a tool to help solve a domain-specific workflow problem for direct printing on substrates (phone cases, t-shirts, cups, and mugs).
 
 This is really just a stripped down Photoshop, with quality-of-life (QoL) features to directly assist with this workflow. It is intended to specifically excel when embedded into e-commerce CMS to allow for user-orchestrated customization of product designs. For all self orchestrated workflows (i.e. bulk printing via Photoshop), this might not be the most effective tool.
 
 # Changelog, in pictures
+
+## V4
+
+![July 10 2024 (1)](https://github.com/user-attachments/assets/c5303511-7526-4c1d-8200-033d75993f56)
+
 
 ## V3
 
