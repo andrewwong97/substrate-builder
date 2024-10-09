@@ -4,6 +4,8 @@ I am building a tool to help solve a domain-specific workflow problem for direct
 
 This is really just a stripped down Photoshop, with quality-of-life (QoL) features to directly assist with this workflow. It is intended to specifically excel when embedded into e-commerce CMS to allow for user-orchestrated customization of product designs. For all self orchestrated workflows (i.e. bulk printing via Photoshop), this might not be the most effective tool.
 
+At the moment, there is no backend set up (see issues tab). Frontend data is persisted via local storage, and most of the file state is manipulated in local state, not saved anywhere.
+
 # Changelog, in pictures
 
 ## V4
