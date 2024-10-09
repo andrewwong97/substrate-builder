@@ -6,6 +6,8 @@ This is really just a stripped down Photoshop, with quality-of-life (QoL) featur
 
 At the moment, there is no backend set up (see issues tab). Frontend data is persisted via local storage, and most of the file state is manipulated in local state, not saved anywhere.
 
+Image manipulation is done via React Konva, which is great for single canvas manipulations, but not great when you need a canvas on a canvas. As a food for thought, it may be better to rewrite some of this functionality and reduce dependencies.
+
 # Changelog, in pictures
 
 ## V4
